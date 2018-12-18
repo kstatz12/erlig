@@ -1,1 +1,8 @@
-[].
+[{<<"erlang_murmurhash">>,
+  {git,"https://github.com/thekvs/erlang-murmurhash.git",
+       {ref,"9164bb8c3b7e55272ce7e374521eaa52dce5767e"}},
+  0},
+ {<<"murmur">>,
+  {git,"https://github.com/lpgauth/murmur.git",
+       {ref,"709445d213514ab1121fb67329dca945ffb11599"}},
+  0}].
