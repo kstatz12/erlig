@@ -13,6 +13,7 @@
               state/0,
               erlig_command/0
              ]).
+
 %% start with default name and one node
 start() ->
     start(filter_ra).
@@ -24,6 +25,7 @@ start(Name) ->
 %% start with name and provided nodes
 start(Name, Nodes) when is_list(Nodes) ->
     Servers = [{Name, N} || N <- Nodes],
+    application:ensure_all_started(ra),
     ra:start_cluster(Name, {module, ?MODULE, #{}}, Servers).
 %public
 add(Server, Key) ->
