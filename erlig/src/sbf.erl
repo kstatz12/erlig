@@ -18,7 +18,7 @@
     size/1, capacity/1]).
 -export([is_element/2, add_element/2]). % alternative names
 -import(math, [log/1, pow/2]).
-
+-include("sbf_records.hrl").
 is_element(E, B) -> member(E, B).
 add_element(E, B) -> add(E, B).
 
@@ -36,22 +36,6 @@ add_element(E, B) -> add(E, B).
 %% filters through bit operations. Double hashing is used (no need for
 %% enhanced double hashing for partitioned bloom filters).
 %%
-
--record(bloom, {
-    e,    % error probability
-    n,    % maximum number of elements
-    mb,   % 2^mb = m, the size of each slice (bitvector)
-    size, % number of elements
-    a     % list of bitvectors
-}).
-
--record(sbf, {
-    e,    % error probability
-    r,    % error probability ratio
-    s,    % log 2 of growth ratio
-    size, % number of elements
-    b     % list of plain bloom filters
-}).
 
 %% Constructors for (fixed capacity) bloom filters
 %%

@@ -3,9 +3,9 @@
 -export([init/1, apply/3]).
 -export([start/0, start/1, start/2]).
 -export([add/2, check/2]).
-
+-include("sbf_records.hrl").
 %% ra types
--opaque state() :: {term()}.
+-opaque state() :: #sbf{}.
 
 -type erlig_command() :: {add, Key :: term()} | {check, Key :: term()}.
 
