@@ -1,3 +1,7 @@
-language: erlang
 otp_release:
- - 20.1
+ - "21.0"
+script:
+ - cd erlig/
+ - rebar3 compile
+
+
