@@ -42,7 +42,7 @@ check(Server, Key) ->
 
 %%ra_machine callbacks
 init(_) ->
-    sbf:sbf(100000).
+    sbf:sbf(1000000).
 
 apply(_Meta, {add, Key}, State) ->
     sbf:add(Key, State),
