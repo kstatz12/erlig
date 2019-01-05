@@ -9,7 +9,7 @@ get_id(stamp) ->
     {ok, hash(Stamp)};
 get_id(uuid) ->
     UUID = uuid:get_v4_urandom(),
-    {ok, UUID};
+    {ok, hash(UUID)};
 get_id(KeyParts = #{}) ->
     case gen(KeyParts) of
         {badmap, _} -> {error, badmap};

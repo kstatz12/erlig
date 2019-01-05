@@ -16,19 +16,20 @@ start_link(Config) ->
 get_id(stamp) ->
     gen_server:call({global, ?MODULE}, {get, stamp});
 get_id(uuid) ->
-    gen_server:call(global, {get, uuid});
+    gen_server:call({global, ?MODULE}, {get, uuid});
 get_id(KeyParts) ->
-    gen_server:call(global, {get, KeyParts}).
+    gen_server:call({global, ?MODULE}, {get, KeyParts}).
 
 
 handle_call({get, stamp}, _From, State) ->
     {ok, Hash} = id:get_id(stamp),
-    %% check the ra cluster for existing
     {reply, Hash, State};
 handle_call({get, uuid}, _From, State) ->
-    ok;
+    {ok, Hash} = id:get_id(uuid),
+    {reply, Hash, State};
 handle_call({get, KeyParts}, _From, State) ->
-    ok.
+    {ok, Hash} = id:get_id(KeyParts),
+    {reply, Hash, State}.
 
 
 
