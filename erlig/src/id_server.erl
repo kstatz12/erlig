@@ -2,28 +2,35 @@
 -behaviour(gen_server).
 
 -export([init/1, start_link/1]).
+-export([handle_call/3]).
 -export([get_id/1]).
 
+
 init(Config) ->
-    ok.
+    quickrand:seed(),
+    {ok, []}.
 
 start_link(Config) ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], Config).
 
 get_id(stamp) ->
-    get_server:call({global, ?MODULE}, {get, stamp});
+    gen_server:call({global, ?MODULE}, {get, stamp});
 get_id(uuid) ->
-    get_server:call({global, ?MODULE}, {get, uuid});
+    gen_server:call(global, {get, uuid});
 get_id(KeyParts) ->
-    gen_server:call({global, ?MODULE}, {get, KeyParts}).
+    gen_server:call(global, {get, KeyParts}).
 
 
-handle_cast({get, stamp}, _From, State) ->
+handle_call({get, stamp}, _From, State) ->
+    {ok, Hash} = id:get_id(stamp),
+    %% check the ra cluster for existing
+    {reply, Hash, State};
+handle_call({get, uuid}, _From, State) ->
     ok;
-handle_cast({get, uuid}, _From, State) ->
-    ok;
-handle_cast({get, KeyParts}, _From, State) ->
+handle_call({get, KeyParts}, _From, State) ->
     ok.
+
+
 
 
 
