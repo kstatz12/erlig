@@ -27,7 +27,7 @@ add_element(E, B) -> add(E, B).
 %% Scalable Bloom Filters
 %% Paulo Sérgio Almeida, Carlos Baquero, Nuno Preguiça, David Hutchison
 %% Information Processing Letters
-%% Volume 101, Issue 6, 31 March 2007, Pages 255-261 
+%% Volume 101, Issue 6, 31 March 2007, Pages 
 %%
 %% Provides scalable bloom filters that can grow indefinitely while
 %% ensuring a desired maximum false positive probability. Also provides
