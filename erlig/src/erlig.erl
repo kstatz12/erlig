@@ -1,16 +1,16 @@
 -module(erlig).
 -include("sbf_records.hrl").
 
--export([init/1, start_link/1]).
+-export([init/1, start_link/0]).
 -export([add/2, generate/2]).
 -behavior(gen_server).
 
-init(Config = #sbf{}) ->
-    Config.
+init(_Config) ->
+    {ok, []}.
 
 
-start_link(Config = #sbf{}) ->
-    gen_server:start_link(?MODULE, [], Config).
+start_link() ->
+    gen_server:start_link(?MODULE, [], []).
 
 add(Pid, Key) ->
     gen_server:cast(Pid, {add, Key}).
