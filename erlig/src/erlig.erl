@@ -2,26 +2,19 @@
 -include("sbf_records.hrl").
 
 -export([init/1, start_link/0]).
--export([add/2, generate/2]).
+-export([generate/2]).
 -behavior(gen_server).
 
 init(_Config) ->
-    {ok, []}.
+    Sbf = sbf:sbf(100000),
+    {ok, Sbf}.
 
 
 start_link() ->
     gen_server:start_link(?MODULE, [], []).
 
-add(Pid, Key) ->
-    gen_server:cast(Pid, {add, Key}).
-
 generate(Pid, Type) ->
     gen_server:call(Pid, {gen, Type}).
-
-handle_cast({add, Key}, State) ->
-    sbf:add(Key, State),
-    {noreply, State}.
-
 
 handle_call({gen, Type}, _From, State) ->
     Id = get_id(Type),
