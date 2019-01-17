@@ -17,7 +17,7 @@ init(Nodes) ->
 
 add(Key) ->
     F = fun() ->
-                mnesia:write(#erlig_hash{key = Key})
+             mnesia:write(#erlig_hash{key = Key})
         end,
     mnesia:activity(F).
     
@@ -34,4 +34,5 @@ setup_mnesia(Nodes) ->
                                {index, [#erlig_hash.key]}, 
                                {disc_copies, Nodes}]),
     rpc:multicall(Nodes, application, stop, [mnesia]).
+
 
