@@ -2,19 +2,29 @@
 -include("sbf_records.hrl").
 
 -export([init/1, start_link/0]).
--export([generate/2]).
+-export([add/2,generate/2]).
 -behavior(gen_server).
 
 init(_Config) ->
     Sbf = sbf:sbf(100000),
+    %% when the genserver starts hydrate the sbf from mnesia
+    storage:hydrate(Sbf),
     {ok, Sbf}.
 
 
 start_link() ->
     gen_server:start_link(?MODULE, [], []).
 
+add(Pid, Id) ->
+    gen_server:call(Pid, {add, Id}).
+
 generate(Pid, Type) ->
     gen_server:call(Pid, {gen, Type}).
+
+handle_call({add, Id}, _From, State) ->
+    sbf:add(Id, State),
+    storage:add(Id),
+    {reply, ok, state};
 
 handle_call({gen, Type}, _From, State) ->
     Id = get_id(Type),

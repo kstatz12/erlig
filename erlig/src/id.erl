@@ -31,4 +31,3 @@ get_timestamp() ->
     {Mega, Sec, Micro} = os:timestamp(),
     Val = (Mega*1000000 + Sec)*1000 + round(Micro/1000),
     lists:flatten(io_lib:format("~p", [Val])).
-    
