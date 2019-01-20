@@ -1,17 +1,17 @@
 -module(id_server).
 -behaviour(gen_server).
 
--export([init/1, start_link/1]).
+-export([init/1, start_link/0]).
 -export([handle_call/3]).
 -export([get_id/1]).
 
 
-init(Config) ->
+init([]) ->
     quickrand:seed(),
     {ok, []}.
 
-start_link(Config) ->
-    gen_server:start_link({global, ?MODULE}, ?MODULE, [], Config).
+start_link() ->
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 get_id(stamp) ->
     gen_server:call({global, ?MODULE}, {get, stamp});

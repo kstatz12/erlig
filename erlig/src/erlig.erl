@@ -3,12 +3,13 @@
 
 -export([init/1, start_link/0]).
 -export([add/2,generate/2]).
+-export([handle_call/3, handle_cast/2]).
 -behavior(gen_server).
 
 init(_Config) ->
-    Sbf = sbf:sbf(100000),
+    Sbf = sbf:sbf(30000),
     %% when the genserver starts hydrate the sbf from mnesia
-    storage:hydrate(Sbf),
+    %% storage:hydrate(Sbf),
     {ok, Sbf}.
 
 
@@ -16,15 +17,14 @@ start_link() ->
     gen_server:start_link(?MODULE, [], []).
 
 add(Pid, Id) ->
-    gen_server:call(Pid, {add, Id}).
+    gen_server:cast(Pid, {add, Id}).
 
 generate(Pid, Type) ->
     gen_server:call(Pid, {gen, Type}).
 
-handle_call({add, Id}, _From, State) ->
-    sbf:add(Id, State),
-    storage:add(Id),
-    {reply, ok, state};
+handle_cast({add, Id}, State) ->
+    NewState = sbf:add(Id, State),
+    {noreply, NewState}.
 
 handle_call({gen, Type}, _From, State) ->
     Id = get_id(Type),
@@ -32,8 +32,8 @@ handle_call({gen, Type}, _From, State) ->
         true ->
             {reply, exists, State};
         false ->
-            Servers = pg2:get_members(sbf),
-            lists:map(fun(X) -> erlig:add(X, Id) end, Servers),
+            Pids = pg2:get_members(sbf),
+            lists:foreach(fun(X) -> erlig:add(X, Id) end, Pids),
             {reply, Id, State}
     end.
 

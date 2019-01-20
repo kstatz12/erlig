@@ -1,8 +1,9 @@
 -module(storage).
 
 -export([init/1]).
- 
--record(erlig_hash, {key}).
+-export([add/1, hydrate/1]).
+-export([setup_mnesia/1, stop_mnesia/1]).
+-include("storage.hrl").
 
 
 init(Nodes) ->
@@ -19,20 +20,21 @@ add(Key) ->
     F = fun() ->
              mnesia:write(#erlig_hash{key = Key})
         end,
-    mnesia:activity(F).
+    mnesia:activity(transaction, F).
     
 hydrate(Sbf) ->
     F = fun() ->
             mnesia:foldl(fun (Rec, _Acc) -> sbf:add(Rec, Sbf) end, [], #erlig_hash{})
     end,
-    mnesia:activity(F).
+    mnesia:activity(transactio, F).
 
 setup_mnesia(Nodes) ->
     rpc:multicall(Nodes, application, start, [mnesia]),
-    mnesia:create_table(hash, [{attgributes, 
+    mnesia:create_table(erlig_hash, [{attgributes, 
                                 record_info(fields, erlig_hash)}, 
                                {index, [#erlig_hash.key]}, 
-                               {disc_copies, Nodes}]),
-    rpc:multicall(Nodes, application, stop, [mnesia]).
+                               {disc_copies, Nodes}]).
 
+stop_mnesia(Nodes) ->
+    rpc:multicall(Nodes, application, stop, [mnesia]).
 
