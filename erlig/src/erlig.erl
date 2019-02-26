@@ -46,3 +46,4 @@ get_id(Type) ->
         KeyParts ->
             id_server:get_id(KeyParts)
     end.
+3
