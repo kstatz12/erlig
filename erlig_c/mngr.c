@@ -15,6 +15,7 @@ struct KeyList * get_keys(const char * path){
   FILE * fp = open_read(path);
   if(fseek(fp, 0L, SEEK_END) > KEYBUFFERSIZE){
     rewind(fp);
+
   }
 
 }
