@@ -9,57 +9,39 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#include "file.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
+#include "mngr.h"
 
-int dir_exists(const char *path);
-
-FILE * open_append(const char * path){
-  if(!dir_exists(path)){
-    mkdir(path, 0777);
+struct KeyList * get_keys(const char * path){
+  FILE * fp = open_read(path);
+  if(fseek(fp, 0L, SEEK_END) > KEYBUFFERSIZE){
+    rewind(fp);
   }
-  chdir(path);
-  return fopen(FILENAME, "ab+");
+
 }
 
-FILE * open_read(const char * path){
-  if(!dir_exists(path)){
-    fprintf(stderr, "File Directory Doesn't Exist");
-    exit(-1);
+void save_key(const char * path, const char * key){
+  FILE * fp = open_append(path);
+  if(fp != NULL){
+    fprintf(fp, "%s", key);
+    fclose(fp);
+    return;
   }
-  chdir(path);
-  FILE * fp =  fopen(FILENAME, "r");
-  if(fp == NULL){
-    if(errno == EINVAL){
-      fprintf(stderr, "Invalid Mode Provided to fopen");
-      reset_pos(fp);
-      exit(errno);
+  fprintf(stderr, "%s", "Could Not Save To File");
+}
+
+int fill_node(FILE *fp, struct Node * new_node){
+  char * buffer = (char *)malloc(sizeof(char) * KEYBUFFERSIZE);
+  if(fread(buffer, sizeof(char), KEYBUFFERSIZE, fp) == KEYBUFFERSIZE){
+    new_node->buffer_length = KEYBUFFERSIZE;
+    new_node->buffer = buffer;
+    new_node->next = NULL;
+    return FILLNODE_OK
+  }
+  else{
+    if(feof(fp) == 1){
+      return FILLNODE_EOF
     }
+    return FILLNODE_ERR;
   }
-  return fp;
 }
-
-
-int next_buffer_pos(FILE * fp){
-  long current_pos = ftell(fp);
-  return fseek(fp, current_pos+KEYBUFFERSIZE, SEEK_SET);
-}
-
-int next_key_pos(FILE * fp){
-  long current_pos = ftell(fp); 
-  return fseek(fp, current_pos+KEYSIZE, SEEK_SET);
-}
-
-void reset_pos(FILE * fp){
-  rewind(fp);
-}
-
-int dir_exists(const char *path){
-  struct stat buffer = {0};
-  return stat(path, &buffer) == -1 ? 0 : 1;
-}
-
 
