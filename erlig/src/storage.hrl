@@ -1,1 +1,0 @@
--record(erlig_hash, {key, timestamp}).
