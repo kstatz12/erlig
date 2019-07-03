@@ -8,7 +8,6 @@
 
 -export([next/0, reset/0]).
 
-
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
