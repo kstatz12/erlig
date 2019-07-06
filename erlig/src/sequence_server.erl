@@ -8,8 +8,10 @@
 
 -export([next/0, reset/0]).
 
+-define(SEQUENCE_MAX, 1024 * 100).
+
 start_link() ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 next() ->
     gen_server:call(?MODULE, next).
@@ -18,11 +20,12 @@ reset() ->
     gen_server:cast(?MODULE, reset).
 
 init(_) ->
+    io:format("Starting Sequence Server at PID ~p ~n", [self()]),
     {ok, 0}.
 
 handle_call(next, _From, State) ->
     case State of
-        1024 ->
+        ?SEQUENCE_MAX ->
             {reply, State, 1};
         _ ->
             {reply, State, State + 1}

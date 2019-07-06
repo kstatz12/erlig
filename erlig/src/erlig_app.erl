@@ -15,7 +15,9 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
-    erlig_sup:start_link().
+    erlig_sup:start_link(),
+    key_storage_sup:start_link(),
+    sequence_server_sup:start_link().
 
 %%--------------------------------------------------------------------
 stop(_State) ->
