@@ -11,7 +11,7 @@
 -define(SEQUENCE_MAX, 1024 * 100).
 
 start_link() ->
-    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 next() ->
     gen_server:call(?MODULE, next).

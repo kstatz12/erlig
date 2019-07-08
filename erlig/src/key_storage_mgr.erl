@@ -18,7 +18,7 @@
 
 
 give_away() ->
-    gen_server:cast(?MODULE, give_away).
+    gen_server:cast(?MODULE, {give_away, []}).
 
 init(_) ->
     io:format("Starting Key Storage Manager at PID ~p ~n", [self()]),
@@ -32,12 +32,12 @@ start_link() ->
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
-handle_cast(give_away, State) ->
+handle_cast({give_away, Data}, State) ->
     Server = wait_for_srv(),
     link(Server),
-    TableId = ets:new(?MODULE, [bag]),
-    ets:setopts(TableId, {heir, self()}, [bag]),
-    ets:give_away(TableId, Server, [bag]),
+    TableId = ets:new(?MODULE, [set]),
+    ets:setopts(TableId, {heir, self(), Data}),
+    ets:give_away(TableId, Server, Data),
     {noreply, State#state{table_id = TableId}};
 
 handle_cast(_Msg, State) ->
@@ -47,7 +47,8 @@ handle_cast(_Msg, State) ->
 handle_info({'EXIT', _Pid, killed}, State) ->
     {noreply, State};
 
-handle_info({'ETS-TRANSFER', TableId, _Pid, Data}, State) ->
+handle_info({'ETS-TRANSFER', TableId, Pid, Data}, State) ->
+    io:format("PID ~p Died, Recieved Table ~p ~n", [Pid, TableId]),
     Server = wait_for_srv(),
     link(Server),
     ets:give_away(TableId, Server, Data),
@@ -56,6 +57,7 @@ handle_info({'ETS-TRANSFER', TableId, _Pid, Data}, State) ->
 wait_for_srv() ->
     case whereis(key_storage_serv) of
         undefined ->
+            io:format("Key Storage Server Not Respawned"),
             timer:sleep(1),
             wait_for_srv();
         Pid -> Pid

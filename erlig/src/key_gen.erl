@@ -1,11 +1,24 @@
 -module(key_gen).
 
--export([create/0]).
+-export([create/0, create/1]).
 
 create() ->
-    Str = str:string_format("~p", [node(), sequence_server:next(), os:timestamp()]),
+    create([node(), sequence_server:next(), os:timestamp()]).
+
+create(Map) when is_map(Map) ->
+    List = maps:to_list(Map),
+    create(List);
+
+create(List) when is_list(List) ->
+    Str = str:string_format("~p", [List]),
     <<Int:64/integer, _/binary>> = murmur:murmur3_x64_128(list_to_binary(Str)),
-    Int.
+    case key_storage_serv:put(Int) of
+        ok ->
+            {ok, Int};
+        _ ->
+            key_exists
+    end.
+
 
 
 
